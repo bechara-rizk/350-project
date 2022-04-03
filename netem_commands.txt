@@ -1,0 +1,27 @@
+Source: https://wiki.linuxfoundation.org/networking/netem
+
+To find interface:
+ifconfig -a
+Use the loopback interface (lo) so we are able to test on localhost
+
+Base command:
+tc qdisc add dev <interface> root netem
+(note that the first time in the current session that netem is used,
+ we need to call add, then after that we need to call change instead)
+
+Variable delay:
+tc qdisc change dev <interface> root netem delay 100ms 10ms 25%
+
+Packet loss:
+tc qdisc change dev <interface> root netem loss 0.3% 25%
+
+Packet duplication:
+tc qdisc change dev <interface> root netem duplicate 0.3% 25%
+
+Packet corruption:
+tc qdisc change dev <interface> root netem corrupt 0.3% 25%
+
+Packet reordering:
+tc qdisc change dev <interface> root netem gap 5 delay 10ms
+tc qdisc change dev <interface> root netem reorder 0.3% 25%
+tc qdisc change dev <interface> root netem delay 10ms reorder 25% 50%
