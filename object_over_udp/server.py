@@ -1,17 +1,16 @@
 import base
-import json
 from socket import *
 
 serverPort = 12000
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 serverSocket.bind(('', serverPort))
-translator=base.test()
+
+translator=base.packet("translator")
+
 print("The server is ready to receive")
 while True:
     original_message, clientAddress = serverSocket.recvfrom(2048)
     message=translator.decode(original_message)
-    print("Received: ",message)
-    message.a+=1
-    message.b*=2
-    #encoded=message.encode(message)
+    print(f"Received from {message.username}: ",message.get_message())
+    message.set_message("hello world from server")
     serverSocket.sendto(message.encode(), clientAddress)

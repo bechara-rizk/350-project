@@ -1,17 +1,22 @@
-import json
+class packet:
+    def __init__(self,username=None):
+        self.username=username
+        self.message="None"
 
-class test:
-    def __init__(self,a=0,b=0):
-        self.a=a
-        self.b=b
+    def set_message(self, message):
+        self.message=message
+
+    def get_message(self):
+        return self.message
 
     def encode(self):
-        encoding=str(self.a)+str(self.b)
+        encoding=self.username+"\n"+self.message
         return encoding.encode()
     
     def decode(self, encoding):
         string=encoding.decode()
-        new=test()
-        new.a=int(string[0])
-        new.b=int(string[1])
+        data=string.split("\n")
+        new=packet()
+        new.username=data[0]
+        new.message=data[1]
         return new
