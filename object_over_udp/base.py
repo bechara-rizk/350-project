@@ -1,7 +1,13 @@
 class packet:
-    def __init__(self,username=None):
+    def __init__(self):
+        self.username=None
+        self.message=None
+
+    def set_username(self, username):
         self.username=username
-        self.message="None"
+
+    def get_username(self):
+        return self.username
 
     def set_message(self, message):
         self.message=message
