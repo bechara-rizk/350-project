@@ -22,7 +22,7 @@ if __name__=="__main__":
     channel_name="127.0.0.1"
 
     packet=base.packet()
-    username="peer2" #input("Input your username: ")
+    username=input("Input your username: ")
     packet.set_username(username)
 
     #choice=menu()

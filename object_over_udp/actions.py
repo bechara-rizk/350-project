@@ -14,9 +14,9 @@ def receiver(port):
     # translator=base.packet()
     # translator.set_username("Translator")
 
-    received=None
-
     print(f"Ready to receive on port {serverPort}.")
+
+    received=None
 
     while True:
         status=base.packet()
@@ -24,10 +24,10 @@ def receiver(port):
         original_packet, clientAddress = serverSocket.recvfrom(2048)
         #print(clientAddress)
         packet=base.packet().decode(original_packet)
-        received=packet.seq_nb
-        #status.ack_nb=received
         if packet.syn_flag and (not packet.corrupted):
-            print(f"{packet.get_username()} is connected.")
+            if received is None:
+                print(f"{packet.get_username()} is connected.")
+            status.ack_nb=received=packet.seq_nb
             status.ack_flag=True
             status.syn_flag=True
         else:
@@ -35,7 +35,7 @@ def receiver(port):
                 status.ack_flag=False
             else:
                 status.ack_flag=True
-                if status.ack_nb!=received:
+                if received+1==packet.seq_nb:
                     if not packet.fin_flag:
                         display_message(packet)
                     else:
@@ -43,7 +43,9 @@ def receiver(port):
                         status.ack_flag=False
                         status.syn_flag=False
                         status.fin_flag=False
-                status.ack_nb=received
+                    status.ack_nb=received=packet.seq_nb
+                else:
+                    status.ack_nb=received
         #print("ack sent")
         serverSocket.sendto(status.encode(), clientAddress)
 
@@ -52,20 +54,24 @@ def chat(serverName, serverPort,packet):
     packet.syn_flag=True
     clientSocket = socket(AF_INET, SOCK_DGRAM)
     packet.seq_nb=0
-    clientSocket.sendto(packet.encode(),(serverName, serverPort))
     clientSocket.settimeout(0.5)
-    try:
-        status, serverAddress = clientSocket.recvfrom(2048)
-        status=base.packet().decode(status)
-        if status.ack_flag and status.syn_flag and not status.corrupted:
-            print("Connected to peer.")
-            packet.syn_flag=False
-        else:
-            print("Connection failed. Retry later.")
-            return
-    except:
-        print("Server is not accepting connections. Retry later.")
-        return
+    while True:
+        clientSocket.sendto(packet.encode(),(serverName, serverPort))
+        try:
+            status, serverAddress = clientSocket.recvfrom(2048)
+            status=base.packet().decode(status)
+            if status.ack_flag and status.syn_flag and not status.corrupted:
+                print("Connected to peer.")
+                packet.syn_flag=False
+                break
+            else:
+                continue
+                print("Connection failed. Retry later.")
+                #return
+        except:
+            continue
+            print("Server is not accepting connections. Retry later.")
+            #return
     packet.seq_nb+=1
     while True:
         while True:
