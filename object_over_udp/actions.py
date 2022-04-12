@@ -36,7 +36,13 @@ def receiver(port):
             else:
                 status.ack_flag=True
                 if status.ack_nb!=received:
-                    display_message(packet)
+                    if not packet.fin_flag:
+                        display_message(packet)
+                    else:
+                        print(f"{packet.get_username()} has left.")
+                        status.ack_flag=False
+                        status.syn_flag=False
+                        status.fin_flag=False
                 status.ack_nb=received
         #print("ack sent")
         serverSocket.sendto(status.encode(), clientAddress)
@@ -47,7 +53,7 @@ def chat(serverName, serverPort,packet):
     clientSocket = socket(AF_INET, SOCK_DGRAM)
     packet.seq_nb=0
     clientSocket.sendto(packet.encode(),(serverName, serverPort))
-    clientSocket.settimeout(10)
+    clientSocket.settimeout(0.5)
     try:
         status, serverAddress = clientSocket.recvfrom(2048)
         status=base.packet().decode(status)
@@ -55,19 +61,24 @@ def chat(serverName, serverPort,packet):
             print("Connected to peer.")
             packet.syn_flag=False
         else:
-            print("Connection failed.")
+            print("Connection failed. Retry later.")
             return
     except:
-        print("Server is not accepting connections.")
+        print("Server is not accepting connections. Retry later.")
         return
     packet.seq_nb+=1
     while True:
         while True:
-            message=input("Enter your message: ")
+            message=input()
             if len(message)<=2048:
                 break
             print("Message too long, try again with a shorter message.")
         packet.set_message(message)
+        if message=="2":
+            packet.fin_flag=True
+            clientSocket.sendto(packet.encode(),(serverName, serverPort))
+            packet.fin_flag=False
+            return
         while True:
             #actions.sender(clientSocket,channel_name,peer2_port,packet)
             clientSocket.sendto(packet.encode(),(serverName, serverPort))

@@ -1,26 +1,29 @@
 import base
 import actions
 import threading
-
-peer1_port=12001
-peer2_port=12002
-
-channel_name="127.0.0.1"
+from socket import *
 
 
-packet=base.packet()
-username="peer2" #input("Input your username: ")
-packet.set_username(username)
+def menu():
+    text="""Welcome to HTTB!
+    Enter 1 to connect to peer.
+    Then enter any text to send to peer.
+    Enter 2 to disconnect.
+    """
+    print(text)
+    choice=input("Enter your choice: ")
+    return choice
 
-def chat():
-    #actions.init_connection(channel_name,peer1_port)
-    while True:
-        while True:
-            message=input("Enter your message: ")
-            if len(message)<=2048:
-                break
-            print("Message too long, try again with a shorter message.")
-        packet.set_message(message)
-        actions.sender(channel_name,peer1_port,packet)
+if __name__=="__main__":
+    peer1_port=12001
+    peer2_port=12002
 
-chat()
+    channel_name="127.0.0.1"
+
+    packet=base.packet()
+    username="peer2" #input("Input your username: ")
+    packet.set_username(username)
+
+    #choice=menu()
+
+    actions.chat(channel_name,peer1_port,packet)

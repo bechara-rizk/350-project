@@ -1,31 +1,37 @@
 import base
 import actions
 import threading
-
-peer1_port=12001
-peer2_port=12002
-
-channel_name="127.0.0.1"
+from socket import *
+import time
 
 
-packet=base.packet()
-username="peer1" #input("Input your username: ")
-packet.set_username(username)
+def menu():
+    text="""Welcome to HTTB!
+    Enter 1 to connect to peer.
+    Then enter any text to send to peer.
+    Enter 2 to disconnect.
+    """
+    print(text)
+    choice=input("Enter your choice: ")
+    return choice
 
+if __name__=="__main__":
+    peer1_port=12001
+    peer2_port=12002
 
-def chat():
-    #actions.init_connection(channel_name,peer2_port)
+    channel_name="127.0.0.1"
+
+    packet=base.packet()
+    username="peer1" #input("Input your username: ")
+    packet.set_username(username)
+
+    #choice=menu()
+    #actions.chat(channel_name,peer2_port,packet)
+    rec=threading.Thread(target=actions.receiver,args=(peer1_port,))
+    rec.start()
+    time.sleep(0.5)
     while True:
-        while True:
-            message=input("Enter your message: ")
-            if message.length()<=2048:
-                break
-            print("Message too long, try again with a shorter message.")
-        #message=input()
-        packet.set_message(message)
-        actions.sender(channel_name,peer2_port,packet)
-
-chatter=threading.Thread(target=chat)
-receiver=threading.Thread(target=actions.receiver,args=(peer1_port,))
-receiver.start()
-chatter.start()
+        send=threading.Thread(target=actions.chat,args=(channel_name,peer2_port,packet))
+        input("Press enter to start sending and then input ur message and press enter again to send\n")
+        send.start()
+        send.join()
