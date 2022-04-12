@@ -1,6 +1,4 @@
 import hashlib
-import time
-import threading
 
 class packet:
     def __init__(self):
