@@ -26,4 +26,4 @@ if __name__=="__main__":
 
     #choice=menu()
 
-    actions.chat(channel_name,peer1_port,packet)
+    actions.sender(channel_name,peer1_port,packet)
