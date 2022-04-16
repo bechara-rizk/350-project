@@ -1,3 +1,8 @@
+"""
+server side - receives files over UDP and saves them
+"""
+
+
 from socket import *
 
 serverPort = 12000
