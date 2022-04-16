@@ -1,5 +1,11 @@
+"""
+Sending a file over UDP
+Tested for: .txt , .py , .pdf , .docx , .png
+"""
+
 from socket import *
 import os
+import time
 from math import ceil
 
 serverName = "127.0.0.1"
