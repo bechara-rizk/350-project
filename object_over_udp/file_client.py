@@ -1,12 +1,6 @@
-from math import ceil
 from socket import *
-import time
-import base64
 import os
-""" test=base.packet("bechara")
-test.set_message(input("enter message: "))
-translator=base.packet("translator")
-"""
+from math import ceil
 
 serverName = "127.0.0.1"
 serverPort = 12000
