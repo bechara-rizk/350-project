@@ -13,7 +13,7 @@ serverPort = 12000
 chunk_size = 1024
 sep="\n"
 
-file_name = "my_text.txt"  # THE FILE TO BE SENT SHOULD BE IN THE SAME DIRECTORY AS THIS FILE
+file_name = "my_text.txt"                                          # THE FILE TO BE SENT SHOULD BE IN THE SAME DIRECTORY AS THIS FILE
 
 file_size = os.path.getsize(file_name)
 
@@ -22,7 +22,7 @@ file_type = input("Enter file type: py, txt, docx, pdf ..?: ")
 hello_msg = file_name+sep+file_type+sep+str(file_size)
 
 clientSocket.sendto(hello_msg.encode(), (serverName, serverPort)) # SENDING HELLO MESSAGE WHICH INCLUDES FILE NAME, TYPE AND SIZE
-time.sleep(2) # give some time for the server to create the file (will be removed later in TCP)
+time.sleep(2)                                                     # give some time for the server to create the file (will be removed later in TCP)
 
 
 print("file size: ", file_size) # file size in bytes
