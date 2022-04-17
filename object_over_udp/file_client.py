@@ -40,7 +40,7 @@ with open(file_name, "rb") as file:
             input("file sent, press enter to exit")
             break
         clientSocket.sendto(chunk,(serverName, serverPort))
-        print("sent chunk size: ",file_size,"    ",i,"/",nb_chunks)
+        print("sent chunk size: ",len(chunk),"    ",i,"/",nb_chunks)
         i += 1
         
 
