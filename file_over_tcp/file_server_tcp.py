@@ -1,5 +1,5 @@
 from socket import *
-import tqdm
+import tqdm  # to download this library: in cmd: pip install tqdm
 
 serverPort = 12000
 chunk_size = 512
@@ -20,15 +20,15 @@ new_file = "new_"+hello_rcvd[0].split(".")[0]+"."+hello_rcvd[1]
 print("new file name: ",new_file)
 
 file = open(new_file, "wb")
-progress = tqdm.tqdm(range(int(hello_rcvd[2])), f"Receiving {hello_rcvd[0]}", unit="B", unit_scale=True, unit_divisor=1024)
+progress = tqdm.tqdm(range(int(hello_rcvd[2])), f"Receiving {hello_rcvd[0]}", unit="B", unit_scale=True, unit_divisor=1024)  # optional - requires tqdm
 while True:
     bytes_read = connectionSocket.recv(chunk_size)
     chunks.append(bytes_read)
     if (len(bytes_read) < chunk_size):
-        progress.close()
+        progress.close()                               # optional - requires tqdm
         break
     else:
-        progress.update(len(bytes_read))             # update progress bar
+        progress.update(len(bytes_read))             # update progress bar  | optionsl - requires tqdm
         chunks.append(bytes_read)
    # print("received data chunk size: ",len(bytes_read))
     
