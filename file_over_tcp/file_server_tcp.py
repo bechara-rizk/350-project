@@ -28,7 +28,7 @@ while True:
         progress.close()                               # optional - requires tqdm
         break
     else:
-        progress.update(len(bytes_read))             # update progress bar  | optionsl - requires tqdm
+        progress.update(len(bytes_read))             # update progress bar  | optional - requires tqdm
         chunks.append(bytes_read)
    # print("received data chunk size: ",len(bytes_read))
     
