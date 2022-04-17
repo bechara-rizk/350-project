@@ -14,10 +14,12 @@ serverSocket = socket(AF_INET, SOCK_DGRAM)
 serverSocket.bind(('', serverPort))
 
 print("The server is ready to receive")
-rec_type = serverSocket.recv(2*chunk_size)
-rec_type = rec_type.decode()
-rec_type = rec_type.split(sep)
-new_file = "new_file."+rec_type[1]
+
+hello_rcvd = serverSocket.recv(2*chunk_size)
+hello_rcvd = hello_rcvd.decode()
+hello_rcvd = hello_rcvd.split(sep)
+new_file = "new_"+hello_rcvd[0].split(".")[0]+"."+hello_rcvd[1]
+print("new file name: ",new_file)
 
 file = open(new_file, "wb")
 while True:
