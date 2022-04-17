@@ -20,7 +20,7 @@ def receiver(port):
         packet=base.packet().decode(original_packet)
         if packet.syn_flag and (not packet.corrupted):
             if received is None:
-                print(f"{packet.get_username()} is connected.")
+                print(f"{packet.get_username()} is online.")
             status.ack_nb=received=packet.seq_nb
             status.ack_flag=True
             status.syn_flag=True
@@ -36,7 +36,7 @@ def receiver(port):
                         display_message(packet)
                         status.ack_nb=received=packet.seq_nb
                     else:
-                        print(f"{packet.get_username()} has left.")
+                        print(f"{packet.get_username()} is not online anymore.")
                         status.ack_flag=False
                         status.syn_flag=False
                         status.fin_flag=False
@@ -57,12 +57,12 @@ def sender(serverName, serverPort,packet):
             status, serverAddress = clientSocket.recvfrom(2048)
             status=base.packet().decode(status)
             if status.ack_flag and status.syn_flag and not status.corrupted:
-                print("Connected to peer.")
+                print("You are online.")
                 packet.syn_flag=False
                 break
             else:
                 continue
-        except:
+        except timeout:
             continue
     packet.seq_nb+=1
     while True:
