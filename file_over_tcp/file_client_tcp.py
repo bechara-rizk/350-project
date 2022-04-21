@@ -27,13 +27,11 @@ print("nb of chunks: ",nb_chunks)  # number of chunks to be sent
 
 
 i = 1
-# progress = tqdm.tqdm(range(file_size), f"Sending {file_name}", unit="B", unit_scale=True, unit_divisor=1024) # progress bar
 with open(file_name, "rb") as file:
 
     time.sleep(0.1)
     while True:
         chunk = file.read(chunk_size)
-        # progress.update(len(chunk))             # update progress bar
         if not chunk:
             print("file sent")
             break

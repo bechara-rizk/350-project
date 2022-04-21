@@ -21,17 +21,13 @@ print("new file name: ",new_file)
 
 file = open(new_file, "wb")
 # print(hello_rcvd)
-progress = tqdm.tqdm(range(int(hello_rcvd[2])), f"Receiving {hello_rcvd[0]}", unit="B", unit_scale=True, unit_divisor=1024)  # optional - requires tqdm
 while True:
     bytes_read = connectionSocket.recv(chunk_size)
     # print(bytes_read)
     chunks.append(bytes_read)
     if (len(bytes_read) < chunk_size):
-        progress.update(len(bytes_read))
-        progress.close()                               # optional - requires tqdm
         break
     else:
-        progress.update(len(bytes_read))             # update progress bar  | optional - requires tqdm
         chunks.append(bytes_read)
    # print("received data chunk size: ",len(bytes_read))
     
