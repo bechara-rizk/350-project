@@ -29,7 +29,7 @@ while True:
         break
     else:
         progress.update(len(bytes_read))             # update progress bar  | optional - requires tqdm
-        chunks.append(bytes_read)
+        
    # print("received data chunk size: ",len(bytes_read))
     
 file.write(b''.join(chunks))
