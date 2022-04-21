@@ -7,7 +7,7 @@ import os
 
 serverName = "127.0.0.1"
 serverPort = 12000
-chunk_size = 512
+chunk_size = 2048   # equal to TCP read and write buffers size
 sep="\n"
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName,serverPort))
