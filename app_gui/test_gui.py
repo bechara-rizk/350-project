@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import font
 from tkinter import ttk
 
+#taken from geeksforgeeks.org and adapted for our code
+
 class GUI:
     # constructor method
     def __init__(self):
