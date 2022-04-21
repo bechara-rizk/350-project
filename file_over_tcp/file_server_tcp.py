@@ -2,7 +2,7 @@ from socket import *
 import tqdm  # to download this library: in cmd: pip install tqdm
 
 serverPort = 12000
-chunk_size = 512
+chunk_size = 2048   # equal to TCP read and write buffers size
 
 sep="\n"
 chunks=[]
