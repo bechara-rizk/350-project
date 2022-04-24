@@ -1,10 +1,10 @@
 from math import ceil
 from socket import *
-import time
+# import time
 import os
-import tqdm
-from genericpath import getsize
-from sys import getsizeof
+# import tqdm
+# from genericpath import getsize
+# from sys import getsizeof
 
 def file_sender(receiverName, receiverPort):
     
@@ -45,7 +45,7 @@ def file_sender(receiverName, receiverPort):
                 print("file sent")
                 break
             clientSocket_tcp.sendto(chunk,(receiverName, receiverPort))
-            print("sent chunk size: ",len(chunk),"    ",i,"/",nb_chunks)
+            # print("sent chunk size: ",len(chunk),"    ",i,"/",nb_chunks)
             i += 1
             
     file.close()
@@ -68,6 +68,7 @@ def file_receiver(receiverName, receiverPort):
     chunks=[]
 
     serverSocket_tcp = socket(AF_INET, SOCK_STREAM)
+    # print(receiverPort)
     serverSocket_tcp.bind(('', receiverPort))
     serverSocket_tcp.listen(1)
     print("The server is ready to receive")
@@ -81,15 +82,15 @@ def file_receiver(receiverName, receiverPort):
     print("file name in your machine: ",new_file)
 
     file = open(new_file, "wb")
-    progress = tqdm.tqdm(range(int(hello_rcvd[2])), f"Receiving {hello_rcvd[0]}", unit="B", unit_scale=True, unit_divisor=1024)
+    # progress = tqdm.tqdm(range(int(hello_rcvd[2])), f"Receiving {hello_rcvd[0]}", unit="B", unit_scale=True, unit_divisor=1024)
     while True:
         bytes_read = connectionSocket.recv(chunk_size)
         chunks.append(bytes_read)
         if (len(bytes_read) < chunk_size):
-            progress.close()
+            # progress.close()
             break
-        else:
-            progress.update(len(bytes_read))             # update progress bar
+        # else:
+        #     progress.update(len(bytes_read))             # update progress bar
     # print("received data chunk size: ",len(bytes_read))
     file.write(b''.join(chunks))
     file.close()
