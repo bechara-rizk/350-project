@@ -3,7 +3,7 @@ from socket import *
 # import time
 import os
 # import tqdm
-# from genericpath import getsize
+from genericpath import getsize         # used for hello_msg
 # from sys import getsizeof
 
 def file_sender(receiverName, receiverPort):
