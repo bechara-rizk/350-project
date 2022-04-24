@@ -52,13 +52,13 @@ def file_sender(receiverName, receiverPort):
     #clientSocket_tcp.close() 
 
 
-# FILE RECEIVER END
+# FILE SENDER END
 
 
 #################################################################################
 
 
-# FILE SENDER START
+# FILE RECEIVER START
 
 def file_receiver(receiverName, receiverPort):
 
