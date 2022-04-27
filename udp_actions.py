@@ -36,7 +36,8 @@ def sender(serverName, serverPort,packet):
     # packet.syn_flag=True
     clientSocket = socket(AF_INET, SOCK_DGRAM)
     packet.seq_nb=random.randint(0,1000000000000)
-    clientSocket.settimeout(0.5)
+    timeOut=0.1
+    clientSocket.settimeout(timeOut)
     # while True:
     #     message=
     #     if message=="":
@@ -56,4 +57,6 @@ def sender(serverName, serverPort,packet):
                 packet.seq_nb+=1
                 break
         except:
+            timeOut+=0.1
+            clientSocket.settimeout(timeOut)
             pass #keep sending the packet until it is received
