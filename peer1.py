@@ -196,6 +196,7 @@ class GUI:
             self.textCons.see(END)
             snd= threading.Thread(target = udp_actions.sender,args=(self.channel_name,self.udp_p2_port,self.packet))
             snd.start()
+            snd.join()
         else:
             self.textCons.config(state = NORMAL)
             self.textCons.insert(END, f"Message too long\n\n")
