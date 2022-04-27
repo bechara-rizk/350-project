@@ -6,6 +6,11 @@ import udp_base
 import udp_actions
 from socket import *
 import udp_base
+from math import ceil
+import os
+import tcp_actions
+import time
+import magic
 
 #taken from geeksforgeeks.org and adapted for our code
 "https://www.geeksforgeeks.org/gui-chat-application-using-tkinter-in-python/"
@@ -69,6 +74,8 @@ class GUI:
                          text = "CONTINUE",
                          font = "Helvetica 14 bold",
                          command = lambda: self.goAhead(self.entryName.get()))
+
+        self.entryName.bind("<Return>", lambda funcSend: self.goAhead(self.entryName.get()))
          
         self.go.place(relx = 0.4,
                       rely = 0.55)
@@ -81,7 +88,9 @@ class GUI:
         # the thread to receive messages
         self.packet.set_username(name)
         udp_rec = threading.Thread(target=self.receive)
+        tcp_rec=threading.Thread(target=self.file_receiver,args=(self.channel_name,self.tcp_p1_port))
         udp_rec.start()
+        tcp_rec.start()
  
     # The main layout of the chat
     def layout(self,name):
@@ -160,7 +169,7 @@ class GUI:
                                 font = "Helvetica 10 bold",
                                 width = 20,
                                 bg = "#ABB2B9",
-                                command = lambda : self.sendButton(self.entryMsg.get()))
+                                command = lambda : self.sendBtnFile(self.entryMsg.get()))
          
         self.buttonMsg.place(relx = 0.77,
                              rely = 0.008,
@@ -204,7 +213,39 @@ class GUI:
             self.textCons.see(END)
             # print("message too long")
         # snd.join()
- 
+    
+    def sendBtnFile(self,file_name):
+        chunk_size = 2048
+        self.textCons.config(state = DISABLED)
+        self.entryMsg.delete(0, END)
+
+        clientSocket_tcp = socket(AF_INET, SOCK_STREAM)
+        clientSocket_tcp.connect((self.channel_name,self.tcp_p2_port))
+        
+        file_size = os.path.getsize(file_name)
+        file_type = file_name.split(".")[1]    
+
+        print("file size: ", file_size) # file size in bytes
+        nb_chunks = ceil(file_size/chunk_size) 
+        print("nb of chunks: ",nb_chunks)  # number of chunks to be sent
+        print("starting...")
+
+        i = 0
+        
+        with open(file_name, 'rb') as read_file:   
+            while i < nb_chunks:
+                #print("sending chunk: ",i)
+                read_file.seek(i*chunk_size)
+                data = read_file.read(chunk_size)
+                clientSocket_tcp.send(data)
+                i += 1
+                #print("sent chunk: ",i)
+        read_file.close()
+        self.textCons.config(state = NORMAL)
+        self.textCons.insert(END, "File sent\n\n")
+        self.textCons.config(state = DISABLED)
+        self.textCons.see(END)
+
     # function to receive messages
     def receive(self):
         serverPort=self.udp_p1_port
@@ -233,6 +274,74 @@ class GUI:
                 else:
                     status.ack_nb=received
             serverSocket.sendto(status.encode(), clientAddress)
+
+    def file_receiver(self, receiverName, receiverPort):
+        # self.file_receiver.y = 0     # file index
+        chunk_size = 2048
+
+        sep="\n"
+        #chunks=[]
+
+        serverSocket_tcp = socket(AF_INET, SOCK_STREAM)
+        serverSocket_tcp.bind(('', receiverPort))
+        serverSocket_tcp.listen(1)
+        print("The server is ready to receive")
+        
+        def receive_file():
+            connectionSocket, addr = serverSocket_tcp.accept()
+            
+            new_file = "new_file"
+            self.textCons.config(state = NORMAL)
+            self.textCons.insert(END, "Receiving file\n\n")
+            self.textCons.config(state = DISABLED)
+            self.textCons.see(END)
+            with open(new_file, 'wb') as f:
+                while True:
+                    
+                    data = connectionSocket.recv(chunk_size)
+                    if not data:
+                        break
+                    f.write(data)
+
+            print('\nfile received')
+            time.sleep(1)
+            #print("received hello: ",my_hello)
+            connectionSocket.close()
+            #serverSocket_tcp.close()
+            
+            #print(magic.from_file(new_file, mime=True))
+            rep_ind = ""
+            # self.file_receiver.y+=1
+
+            if (magic.from_file(new_file, mime=True) == "application/pdf"):
+                os.rename(new_file, "new_pdf"+rep_ind+".pdf")
+            elif (magic.from_file(new_file, mime=True) == "image/jpeg"):
+                os.rename(new_file, "new_jpg"+rep_ind+".jpg")
+            elif(magic.from_file(new_file, mime=True) == "image/png"):
+                os.rename(new_file, "new_png"+rep_ind+".png")
+            elif(magic.from_file(new_file, mime=True) == "image/gif"):
+                os.rename(new_file, "new_gif"+rep_ind+".gif")
+            elif(magic.from_file(new_file, mime=True) == "text/plain"):
+                os.rename(new_file, "new_txt"+rep_ind+".txt")
+            elif(magic.from_file(new_file, mime=True) == "application/msword"):
+                os.rename(new_file, "new_doc"+rep_ind+".doc")
+            elif(magic.from_file(new_file, mime=True) == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"):
+                os.rename(new_file, "new_docx"+rep_ind+".docx")
+            elif(magic.from_file(new_file, mime=True) == "application/vnd.ms-excel"):
+                os.rename(new_file, "new_xls"+rep_ind+".xls")
+            elif(magic.from_file(new_file, mime=True) == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"):
+                os.rename(new_file, "new_xlsx"+rep_ind+".xlsx")
+            elif(magic.from_file(new_file, mime=True) == "application/vnd.ms-powerpoint"):
+                os.rename(new_file, "new_ppt"+rep_ind+".ppt")
+            elif(magic.from_file(new_file, mime=True) == "application/vnd.openxmlformats-officedocument.presentationml.presentation"):
+                os.rename(new_file, "new_pptx"+rep_ind+".pptx")
+            elif(magic.from_file(new_file, mime=True) == "application/python"):
+                os.rename(new_file, "new_py"+rep_ind+".py")
+            
+        #exit()
+            receive_file()
+        #file_receiver(receiverName, receiverPort)    # RECURSIVE FUNCTION CALL
+        receive_file()
          
     # function to send messages
     # def sendMessage(self):
