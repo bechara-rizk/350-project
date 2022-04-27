@@ -1,5 +1,5 @@
 import base
-import actions
+import udp_actions
 import threading
 from socket import *
 import time
@@ -15,11 +15,11 @@ if __name__=="__main__":
     # username="p2"
     packet.set_username(username)
 
-    rec=threading.Thread(target=actions.receiver,args=(peer2_port,))
+    rec=threading.Thread(target=udp_actions.receiver,args=(peer2_port,))
     rec.start()
     time.sleep(0.5)
     while True:
-        send=threading.Thread(target=actions.sender,args=(channel_name,peer1_port,packet))
-        input("Press enter to start sending and then input ur message and press enter again to send\n")
+        send=threading.Thread(target=udp_actions.sender,args=(channel_name,peer1_port,packet))
+        # input("Press enter to start sending and then input ur message and press enter again to send\n")
         send.start()
         send.join()
