@@ -193,23 +193,24 @@ class GUI:
  
     # function to basically start the thread for sending messages
     def sendButton(self, msg):
-        self.textCons.config(state = DISABLED)
-        self.packet.set_message(msg)
-        self.entryMsg.delete(0, END)
-        if len(msg)<2048:
-            self.textCons.config(state = NORMAL)
-            self.textCons.insert(END, f"You: {msg}\n\n")
+        if msg!="":
             self.textCons.config(state = DISABLED)
-            self.textCons.see(END)
-            snd= threading.Thread(target = self.sender,args=(self.channel_name,self.udp_p2_port,self.packet))
-            snd.start()
-            snd.join()
-        else:
-            self.textCons.config(state = NORMAL)
-            self.textCons.insert(END, f"Message too long\n\n")
-            self.textCons.config(state = DISABLED)
-            self.textCons.see(END)
-        # snd.join()
+            self.packet.set_message(msg)
+            self.entryMsg.delete(0, END)
+            if len(msg)<2048:
+                self.textCons.config(state = NORMAL)
+                self.textCons.insert(END, f"You: {msg}\n\n")
+                self.textCons.config(state = DISABLED)
+                self.textCons.see(END)
+                snd= threading.Thread(target = self.sender,args=(self.channel_name,self.udp_p2_port,self.packet))
+                snd.start()
+                snd.join()
+            else:
+                self.textCons.config(state = NORMAL)
+                self.textCons.insert(END, f"Message too long\n\n")
+                self.textCons.config(state = DISABLED)
+                self.textCons.see(END)
+            # snd.join()
 
     def sender(self,serverName, serverPort,packet):
         clientSocket = socket(AF_INET, SOCK_DGRAM)
