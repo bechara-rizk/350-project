@@ -1,12 +1,24 @@
 from tkinter import *
 from tkinter import font
 from tkinter import ttk
+import threading
+import udp_base
+import udp_actions
+from socket import *
+import udp_base
 
 #taken from geeksforgeeks.org and adapted for our code
+"https://www.geeksforgeeks.org/gui-chat-application-using-tkinter-in-python/"
 
 class GUI:
     # constructor method
     def __init__(self):
+        self.channel_name = "127.0.0.1"
+        self.udp_p1_port = 12001
+        self.udp_p2_port = 12002
+        self.tcp_p1_port = 12003
+        self.tcp_p2_port = 12004
+        self.packet=udp_base.packet()
        
         # chat window which is currently hidden
         self.Window = Tk()
@@ -67,8 +79,9 @@ class GUI:
         self.layout(name)
          
         # the thread to receive messages
-        rcv = threading.Thread(target=self.receive)
-        rcv.start()
+        self.packet.set_username(name)
+        udp_rec = threading.Thread(target=self.receive)
+        udp_rec.start()
  
     # The main layout of the chat
     def layout(self,name):
@@ -170,42 +183,61 @@ class GUI:
  
     # function to basically start the thread for sending messages
     def sendButton(self, msg):
+        # print("send btn")
         self.textCons.config(state = DISABLED)
-        self.msg=msg
+        self.packet.set_message(msg)
         self.entryMsg.delete(0, END)
-        snd= threading.Thread(target = self.sendMessage)
-        snd.start()
+        if len(msg)<2048:
+            self.textCons.config(state = NORMAL)
+            self.textCons.insert(END, f"You: {msg}\n\n")
+            self.textCons.config(state = DISABLED)
+            self.textCons.see(END)
+            snd= threading.Thread(target = udp_actions.sender,args=(self.channel_name,self.udp_p1_port,self.packet))
+            snd.start()
+        else:
+            self.textCons.config(state = NORMAL)
+            self.textCons.insert(END, f"Message too long\n\n")
+            self.textCons.config(state = DISABLED)
+            self.textCons.see(END)
+            # print("message too long")
+        # snd.join()
  
     # function to receive messages
     def receive(self):
+        serverPort=self.udp_p2_port
+        serverSocket = socket(AF_INET, SOCK_DGRAM)
+        serverSocket.bind(('', serverPort))
+
+        print(f"Ready to receive on port {serverPort}.")
+
+        received=None
+
         while True:
-            try:
-                message = client.recv(1024).decode(FORMAT)
-                 
-                # if the messages from the server is NAME send the client's name
-                if message == 'NAME':
-                    client.send(self.name.encode(FORMAT))
-                else:
-                    # insert messages to text box
+            status=udp_base.packet()
+            status.set_username("status")
+            original_packet, clientAddress = serverSocket.recvfrom(2048)
+            packet=udp_base.packet().decode(original_packet)
+            if packet.corrupted:
+                status.ack_flag=False
+            else:
+                status.ack_flag=True
+                if received!=packet.seq_nb:
                     self.textCons.config(state = NORMAL)
-                    self.textCons.insert(END,
-                                         message+"\n\n")
-                     
+                    self.textCons.insert(END, f"{packet.get_username()}: {packet.get_message()}\n\n")
                     self.textCons.config(state = DISABLED)
                     self.textCons.see(END)
-            except:
-                # an error will be printed on the command line or console if there's an error
-                print("An error occured!")
-                client.close()
-                break
+                    status.ack_nb=received=packet.seq_nb
+                else:
+                    status.ack_nb=received
+            serverSocket.sendto(status.encode(), clientAddress)
          
     # function to send messages
-    def sendMessage(self):
-        self.textCons.config(state=DISABLED)
-        while True:
-            message = (f"{self.name}: {self.msg}")
-            client.send(message.encode(FORMAT))   
-            break   
+    # def sendMessage(self):
+    #     self.textCons.config(state=DISABLED)
+    #     while True:
+    #         message = (f"{self.name}: {self.msg}")
+    #         client.send(message.encode(FORMAT))   
+    #         break   
  
 # create a GUI class object
 g = GUI()
