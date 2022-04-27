@@ -10,17 +10,6 @@ class packet:
         self.syn_flag=False
         self.ack_nb=0
         self.seq_nb=0
-        self.fin_flag=False
-        # self.timing=100
-        # self.breaker=False
-    
-    # def timer(self,timeout=5,broken=[False]):
-    #     count=0
-    #     while count<timeout and not self.breaker:
-    #         time.sleep(0.005)
-    #         count+=0.005
-    #     broken[0]=True
-    #     return True
 
     def set_username(self, username):
         self.username=username
@@ -36,7 +25,7 @@ class packet:
 
     def encode(self):
         sep="\n"
-        encoding=self.username+sep+self.message+sep+self.checksum+sep+str(self.ack_flag)+sep+str(self.syn_flag)+sep+str(self.ack_nb)+sep+str(self.seq_nb)+sep+str(self.fin_flag)
+        encoding=self.username+sep+self.message+sep+self.checksum+sep+str(self.ack_flag)+sep+str(self.syn_flag)+sep+str(self.ack_nb)+sep+str(self.seq_nb)
         encoding=encoding.encode()
         self.generate_checksum(encoding)
         return encoding
@@ -53,13 +42,10 @@ class packet:
             new.syn_flag=self.str_to_bool(data[4])
             new.ack_nb=int(data[5])
             new.seq_nb=int(data[6])
-            new.fin_flag=self.str_to_bool(data[7])
             self.corrupted=not(self.verify_checksum(encoding))
             return new
         except: #any error while decoding says that the packet is corrupted
             self.corrupted=True
-        # except:
-        #     pass
 
     def str_to_bool(self,string):
         if string=="True":
