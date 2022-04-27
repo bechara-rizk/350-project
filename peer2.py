@@ -94,10 +94,10 @@ class GUI:
                               height = False)
         self.Window.configure(width = 470,
                               height = 550,
-                              bg = "#17202A")
+                              bg = "#AC265E")
         self.labelHead = Label(self.Window,
-                             bg = "#17202A",
-                              fg = "#EAECEE",
+                             bg = "#c2c2c2",
+                              fg = "#000000",
                               text = self.name ,
                                font = "Helvetica 13 bold",
                                pady = 5)
@@ -114,8 +114,8 @@ class GUI:
         self.textCons = Text(self.Window,
                              width = 20,
                              height = 2,
-                             bg = "#17202A",
-                             fg = "#EAECEE",
+                             bg = "#c2c2c2",
+                             fg = "#000000",
                              font = "Helvetica 14",
                              padx = 5,
                              pady = 5)
@@ -125,16 +125,16 @@ class GUI:
                             rely = 0.08)
          
         self.labelBottom = Label(self.Window,
-                                 bg = "#ABB2B9",
+                                 bg = "#676767",
                                  height = 80)
          
         self.labelBottom.place(relwidth = 1,
                                rely = 0.825)
          
         self.entryMsg = Entry(self.labelBottom,
-                              bg = "#2C3E50",
-                              fg = "#EAECEE",
-                              font = "Helvetica 13")
+                              bg = "#343434",
+                              fg = "#ffffff",
+                              font = "Helvetica 13", cursor="xterm black")
          
         # place the given widget
         # into the gui window
@@ -144,6 +144,8 @@ class GUI:
                             relx = 0.011)
          
         self.entryMsg.focus()
+
+        self.entryMsg.bind("<Return>", lambda funcSend: self.sendButton(self.entryMsg.get()))
          
         # create a Send Button
         self.buttonMsg = Button(self.labelBottom,
